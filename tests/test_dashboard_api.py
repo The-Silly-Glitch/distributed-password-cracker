@@ -7,7 +7,7 @@ client = TestClient(app)
 def test_index_route():
     resp = client.get("/")
     assert resp.status_code == 200
-    assert "DISTRIBUTED CRACKER" in resp.text
+    assert "Distributed GPU Cracker" in resp.text
 
 
 def test_status_api():

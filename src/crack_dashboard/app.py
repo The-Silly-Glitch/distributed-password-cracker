@@ -54,15 +54,22 @@ def index(request: Request):
 def get_system_status():
     coordinator.check_worker_health(timeout_seconds=15)
     workers = queue.get_workers()
-    active_workers = [w for w in workers if w.get("status") != "offline"]
+    active_workers = [w for w in workers if w.get("status") not in ("offline", "stale")]
+    # Sum hashrate for alive workers; stale/offline workers do not contribute
     total_hashrate = sum(float(w.get("hashrate", 0.0)) for w in active_workers)
 
     jobs = queue.list_all_jobs()
     active_jobs = [j for j in jobs if j.get("status") in ["queued", "in_progress"]]
+    completed_jobs = [j for j in jobs if j.get("status") == "completed"]
 
     all_found = []
+    seen_hashes = set()
     for j in jobs:
-        all_found.extend(queue.get_found(j["id"]))
+        for f in queue.get_found(j["id"]):
+            key = f"{f.get('hash_val')}:{f.get('plaintext')}"
+            if key not in seen_hashes:
+                seen_hashes.add(key)
+                all_found.append(f)
 
     gpu_telemetry = get_gpu_info()
 
@@ -71,6 +78,7 @@ def get_system_status():
         "total_workers": len(workers),
         "total_hashrate": round(total_hashrate, 1),
         "active_jobs": len(active_jobs),
+        "completed_jobs": len(completed_jobs),
         "total_jobs": len(jobs),
         "total_recovered": len(all_found),
         "gpu_telemetry": gpu_telemetry
