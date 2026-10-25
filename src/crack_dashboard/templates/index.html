@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed GPU Password Cracker — Control Center</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-brand">
+            <span class="pulse-dot"></span>
+            <h1>DISTRIBUTED CRACKER // GPU CLUSTER</h1>
+        </div>
+        <div class="nav-actions">
+            <span class="badge legal-badge">AUTHORIZED AUDIT ONLY</span>
+            <button id="btn-open-submit" class="btn btn-primary">+ Submit Job</button>
+        </div>
+    </header>
+
+    <div class="banner-legal">
+        <strong>LEGAL & ETHICAL NOTICE:</strong> This distributed GPU auditing cluster must strictly be used on authorized demonstration targets or owned systems. Unauthorized access is illegal under cybercrime laws.
+    </div>
+
+    <main class="container">
+        <!-- Top Stats Row -->
+        <section class="metrics-grid">
+            <div class="card metric-card">
+                <div class="metric-title">CLUSTER HASHRATE</div>
+                <div class="metric-value" id="val-hashrate">0 H/s</div>
+                <div class="metric-sub" id="val-gpu-name">GPU: Detecting...</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-title">ACTIVE WORKERS</div>
+                <div class="metric-value" id="val-workers">0</div>
+                <div class="metric-sub" id="val-worker-status">0 idle / 0 busy</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-title">GPU TEMPERATURE</div>
+                <div class="metric-value" id="val-gpu-temp">-- °C</div>
+                <div class="metric-sub" id="val-gpu-mem">VRAM: --</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-title">RECOVERED PASSWORDS</div>
+                <div class="metric-value highlight" id="val-recovered">0</div>
+                <div class="metric-sub" id="val-active-jobs">0 Active Jobs</div>
+            </div>
+        </section>
+
+        <!-- Main Workspace: Jobs & Active Workers -->
+        <div class="split-layout">
+            <!-- Left: Active & Queued Jobs -->
+            <section class="card panel-jobs">
+                <div class="panel-header">
+                    <h2>Job Queue & Dynamic Assignments</h2>
+                    <span class="refresh-indicator" id="refresh-indicator">LIVE</span>
+                </div>
+                <div class="jobs-list" id="jobs-container">
+                    <div class="empty-state">No jobs currently queued. Submit a job to begin cracking.</div>
+                </div>
+            </section>
+
+            <!-- Right: Workers List -->
+            <section class="card panel-workers">
+                <div class="panel-header">
+                    <h2>Worker Nodes & GPU Telemetry</h2>
+                </div>
+                <div class="workers-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Worker ID</th>
+                                <th>Device</th>
+                                <th>Status</th>
+                                <th>Speed</th>
+                                <th>Current Task</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workers-tbody">
+                            <tr>
+                                <td colspan="5" class="empty-cell">Scanning for active workers...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Bottom: Cracked Credentials & Analysis -->
+        <section class="card panel-results">
+            <div class="panel-header">
+                <h2>Recovered Credentials & Policy Compliance Findings</h2>
+                <button class="btn btn-sm btn-outline" onclick="loadRecovered()">Refresh Results</button>
+            </div>
+            <div class="results-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Job</th>
+                            <th>Algorithm</th>
+                            <th>Target Hash</th>
+                            <th>Recovered Plaintext</th>
+                            <th>Entropy</th>
+                            <th>Strength Rating</th>
+                            <th>Worker ID</th>
+                            <th>Cracked At</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody">
+                        <tr>
+                            <td colspan="8" class="empty-cell">No credentials recovered yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Submitting New Job -->
+    <div class="modal-backdrop" id="submit-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Submit Distributed Crack Job</h3>
+                <button class="modal-close" id="btn-close-submit">&times;</button>
+            </div>
+            <form id="job-form">
+                <div class="form-group">
+                    <label>Job Name</label>
+                    <input type="text" id="input-job-name" value="Demo Audit Job" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Algorithm</label>
+                        <select id="select-algo">
+                            <option value="md5">MD5</option>
+                            <option value="sha1">SHA-1</option>
+                            <option value="sha256" selected>SHA-256</option>
+                            <option value="bcrypt">bcrypt (Cost 4 Demo)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Attack Strategy</label>
+                        <select id="select-strategy">
+                            <option value="hybrid" selected>Hybrid (Fast -> Brute-Force)</option>
+                            <option value="dictionary">Dictionary Wordlist</option>
+                            <option value="pattern">Pattern Templates (Season/Year)</option>
+                            <option value="ruleset">Ruleset (Leet / Toggles)</option>
+                            <option value="brute_force">Sub-range Brute Force</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority (1-10)</label>
+                        <input type="number" id="input-priority" min="1" max="10" value="8">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Target Hashes (one per line)</label>
+                    <textarea id="input-hashes" rows="4" placeholder="e.g. 5d41402abc4b2a76b9719d911017c592" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="btn-cancel-submit">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Dispatch Job to Cluster</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

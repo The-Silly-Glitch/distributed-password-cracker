@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel>=0.40.0", "pybind11>=2.12.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "distributed-password-cracker"
+version = "0.1.0"
+description = "GPU-accelerated distributed password audit and cracking demonstration framework"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pybind11>=2.12.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "redis>=5.0.0",
+    "pika>=1.3.0",
+    "psycopg2-binary>=2.9.0",
+    "bcrypt>=4.0.0",
+    "sqlalchemy>=2.0.0",
+    "pydantic>=2.6.0",
+    "jinja2>=3.1.0",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+]
