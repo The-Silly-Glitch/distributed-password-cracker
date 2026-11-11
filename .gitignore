@@ -30,3 +30,8 @@ htmlcov/
 env/
 venv/
 ENV/
+# Local-only artifacts: screenshots, task notes, resume draft.
+# Kept on disk but never pushed — repo stays source-only.
+*.png
+AGY_TASK.md
+RESUME_WRITEUP.md
